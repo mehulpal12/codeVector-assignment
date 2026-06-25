@@ -14,7 +14,7 @@ A product-browsing REST API and single-page dashboard serving **200,000 products
 
 ## 🌟 Live Demo & Preview
 
-* **API Base URL**: `https://your-service-name.onrender.com/products`
+* **API Base URL**: `https://codevector-assignment-esrq.onrender.com/`
 * **Dashboard Front-end**: Served statically from root `/` on the live instance.
 * **Database Size**: `200,000` rows of realistic mock data.
 
@@ -217,19 +217,3 @@ A dashboard is built into the frontend directory (`public/`) serving:
    - `DATABASE_URL`: *Your Neon connection string*
    - `PORT`: `3000`
 5. Click **Deploy**.
-
----
-
-## 🧠 Interview Preparation Questions
-
-During the technical interview, you might be asked to discuss these topics:
-
-1. **"What happens if two products have the same timestamp?"**
-   We use a composite sort order `ORDER BY created_at DESC, id DESC`. If the timestamps match, the unique UUID (`id`) is used as a tiebreaker to maintain deterministic sorting.
-2. **"How does the API know if there is a next page without doing a slow COUNT(*) query?"**
-   We use the **`limit + 1` trick**. If the client requests 20 items, we run the query with `LIMIT 21`. If we get 21 items back, we know there is a next page. We slice off the 21st item, return 20 to the user, and generate the cursor from the 20th item.
-3. **"How would you implement backwards pagination?"**
-   - **Client-Side Stack (Used in UI)**: The UI stores the previous page cursors in a stack array. Clicking "Prev" pops the last cursor.
-   - **Server-Side Bidirectional**: The API would accept a `before` cursor, reverse the query operator to `>` (e.g. `(created_at, id) > (cursor_time, cursor_id)`), sort ascending `ORDER BY created_at ASC, id ASC`, fetch `limit + 1`, and reverse the array in memory before returning it.
-4. **"How do you secure cursors against client tempering?"**
-   We can encrypt the JSON cursor using AES or append an HMAC cryptographic signature. This makes the cursor opaque and tamper-proof.
